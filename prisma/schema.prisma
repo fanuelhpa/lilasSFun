@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,143 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model State {
-id      Int      @id @default(autoincrement()) 
-name_   String    
+model address {
+  id        Int    @id @default(autoincrement())
+  street    String @db.VarChar(190)
+  number    String @db.VarChar(45)
+  zipcode   String @db.VarChar(45)
+  city_id   Int
+  client_id Int
+  city      city   @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_city1")
+  client    client @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_client1")
+
+  @@index([city_id], map: "fk_address_city1_idx")
+  @@index([client_id], map: "fk_address_client1_idx")
+}
+
+model city {
+  id       Int       @id @default(autoincrement())
+  name_    String    @db.VarChar(190)
+  state_id Int
+  state    state     @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_state")
+  address  address[]
+
+  @@index([state_id], map: "fk_city_state_idx")
+}
+
+model client {
+  id               Int                @id @default(autoincrement())
+  name_            String             @db.VarChar(190)
+  email            String             @unique(map: "email_UNIQUE") @db.VarChar(190)
+  password         String             @db.VarChar(190)
+  type             Int                @default(0) @db.TinyInt
+  address          address[]
+  client_telephone client_telephone[]
+  sales_order      sales_order[]
+}
+
+model client_telephone {
+  id        Int    @id @default(autoincrement())
+  number    String @db.VarChar(100)
+  client_id Int
+  client    client @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_telephone_client1")
+
+  @@index([client_id], map: "fk_client_telephone_client1_idx")
+}
+
+model product {
+  id                  Int                   @id @default(autoincrement())
+  name_               String                @db.VarChar(190)
+  inventory_quantity  Int
+  price               Float
+  product_category_id Int
+  product_category    product_category      @relation(fields: [product_category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_product_category1")
+  product_provider    product_provider[]
+  purchase_order_item purchase_order_item[]
+  sales_order_item    sales_order_item[]
+
+  @@index([product_category_id], map: "fk_product_product_category1_idx")
+}
+
+model product_category {
+  id      Int       @id @default(autoincrement())
+  name_   String    @db.VarChar(190)
+  product product[]
+}
+
+model product_provider {
+  provider_id Int
+  product_id  Int
+  product     product  @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_provider_product1")
+  provider    provider @relation(fields: [provider_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_provider_provider1")
+
+  @@id([provider_id, product_id])
+  @@index([product_id], map: "fk_product_provider_product1_idx")
+  @@index([provider_id], map: "fk_product_provider_provider1_idx")
+}
+
+model provider {
+  id                 Int                  @id @default(autoincrement())
+  name_              String               @db.VarChar(190)
+  product_provider   product_provider[]
+  provider_telephone provider_telephone[]
+}
+
+model provider_telephone {
+  id          Int      @id @default(autoincrement())
+  number      String   @db.VarChar(100)
+  provider_id Int
+  provider    provider @relation(fields: [provider_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_provider_telephone_provider1")
+
+  @@index([provider_id], map: "fk_provider_telephone_provider1_idx")
+}
+
+model purchase_order {
+  id                  Int                   @id @default(autoincrement())
+  number              Int
+  date                DateTime              @db.DateTime(0)
+  payment_date        DateTime?             @db.DateTime(0)
+  purchase_order_item purchase_order_item[]
+}
+
+model purchase_order_item {
+  purchase_order_id Int
+  product_id        Int
+  quantity          Int
+  discount          Float?
+  product           product        @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_purchase_order_item_product1")
+  purchase_order    purchase_order @relation(fields: [purchase_order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_purchase_order_item_purchase_order1")
+
+  @@id([purchase_order_id, product_id])
+  @@index([product_id], map: "fk_purchase_order_item_product1_idx")
+}
+
+model sales_order {
+  id               Int                @id @default(autoincrement())
+  number           Int
+  date             DateTime           @db.DateTime(0)
+  payment_date     DateTime?          @db.DateTime(0)
+  client_id        Int
+  client           client             @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_order_client1")
+  sales_order_item sales_order_item[]
+
+  @@index([client_id], map: "fk_sales_order_client1_idx")
+}
+
+model sales_order_item {
+  sales_order_id Int
+  product_id     Int
+  quantity       Int
+  dicount        Float?
+  product        product     @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_order_item_product1")
+  sales_order    sales_order @relation(fields: [sales_order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_order_item_sales_order1")
+
+  @@id([sales_order_id, product_id])
+  @@index([product_id], map: "fk_sales_order_item_product1_idx")
+}
+
+model state {
+  id    Int    @id @default(autoincrement())
+  name_ String @db.VarChar(190)
+  city  city[]
 }
