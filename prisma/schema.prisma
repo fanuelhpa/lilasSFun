@@ -15,7 +15,7 @@ model address {
   city_id   Int
   client_id Int
   city      city   @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_city1")
-  client    client @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_client1")
+  client    client_ @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_client1")
 
   @@index([city_id], map: "fk_address_city1_idx")
   @@index([client_id], map: "fk_address_client1_idx")
@@ -31,12 +31,12 @@ model city {
   @@index([state_id], map: "fk_city_state_idx")
 }
 
-model client {
+model client_ {
   id               Int                @id @default(autoincrement())
   name_            String             @db.VarChar(190)
   email            String             @unique(map: "email_UNIQUE") @db.VarChar(190)
-  password         String             @db.VarChar(190)
-  type             Int                @default(0) @db.TinyInt
+  password_         String             @db.VarChar(190)
+  type_             Int                @default(0) @db.TinyInt
   address          address[]
   client_telephone client_telephone[]
   sales_order      sales_order[]
@@ -44,9 +44,9 @@ model client {
 
 model client_telephone {
   id        Int    @id @default(autoincrement())
-  number    String @db.VarChar(100)
+  number_    String @db.VarChar(100)
   client_id Int
-  client    client @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_telephone_client1")
+  client    client_ @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_telephone_client1")
 
   @@index([client_id], map: "fk_client_telephone_client1_idx")
 }
@@ -124,7 +124,7 @@ model sales_order {
   date             DateTime           @db.DateTime(0)
   payment_date     DateTime?          @db.DateTime(0)
   client_id        Int
-  client           client             @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_order_client1")
+  client           client_             @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sales_order_client1")
   sales_order_item sales_order_item[]
 
   @@index([client_id], map: "fk_sales_order_client1_idx")
