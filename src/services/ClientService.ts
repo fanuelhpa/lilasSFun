@@ -45,19 +45,4 @@ export class ClientService {
 
             return insertedClient;
     }
-
-    //cria os telefones dos clientes
-    public createTelephones = async (clientId: number, client_telephones: client_telephone[]) =>{
-        
-        client_telephones.forEach(element => {
-            element.client_id = clientId
-        });
-
-        let telephonesCreated = await this.prisma.client_telephone.createMany({
-           
-          data: client_telephones,
-
-        })
-        return telephonesCreated;
-    }
 }

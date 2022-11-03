@@ -44,7 +44,7 @@ model client_ {
 
 model client_telephone {
   id        Int    @id @default(autoincrement())
-  number_    String @db.VarChar(100)
+  number_    String @db.VarChar(100) @unique
   client_id Int
   client    client_ @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_client_telephone_client1")
 
