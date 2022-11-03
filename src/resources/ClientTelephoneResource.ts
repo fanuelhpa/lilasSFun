@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { ClientTelephoneService } from "../services/ClientTelephoneService";
 
 
-export default class ClientTelephoneController{
+export default class ClientTelephoneResource{
     constructor(private readonly clientTelephoneService: ClientTelephoneService){};
 
     public createClientTelephone = async (req: Request, res: Response) =>{
@@ -13,6 +13,5 @@ export default class ClientTelephoneController{
         const clientTelephonesCreated = await this.clientTelephoneService.createClientTelephones(telephones);
 
         res.json({clientTelephonesCreated});
-
     }
 }

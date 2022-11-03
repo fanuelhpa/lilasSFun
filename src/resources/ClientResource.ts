@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { ClientService } from "../services/ClientService";
 
 
-export default class ClientController{
+export class ClientResource{
 
 constructor(private readonly clientService: ClientService){};
 
