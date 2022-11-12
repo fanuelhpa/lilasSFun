@@ -1,17 +1,31 @@
-import { client_telephone } from "@prisma/client";
 import { Request, Response } from "express";
 import { ClientTelephoneService } from "../services/ClientTelephoneService";
 
 
-export default class ClientTelephoneResource{
+export class ClientTelephoneResource{
+
     constructor(private readonly clientTelephoneService: ClientTelephoneService){};
 
     public createClientTelephone = async (req: Request, res: Response) =>{
         
-        const {telephones} = req.body;
+        const {client_id, number_} = req.body;
         
-        const clientTelephonesCreated = await this.clientTelephoneService.createClientTelephones(telephones);
-
-        res.json({clientTelephonesCreated});
+        try{
+            const clientTelephoneCreated = await this.clientTelephoneService.createClientTelephone(client_id, number_);
+            
+            if(clientTelephoneCreated){
+                res.json({response: "Telephone sucessfull created!"});
+            }
+        }
+        catch(e){
+            res.json({
+                response: [
+                    {
+                        error: "The telephone allready exists"   
+                    }, 
+                    e
+                ]
+            })
+        }
     }
 }

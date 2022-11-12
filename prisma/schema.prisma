@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model address {
+model client_address {
   id        Int    @id @default(autoincrement())
   street    String @db.VarChar(190)
   number    String @db.VarChar(45)
@@ -26,7 +26,7 @@ model city {
   name_    String    @db.VarChar(190)
   state_id Int
   state    state     @relation(fields: [state_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_state")
-  address  address[]
+  address  client_address[]
 
   @@index([state_id], map: "fk_city_state_idx")
 }
@@ -37,7 +37,7 @@ model client_ {
   email            String             @unique(map: "email_UNIQUE") @db.VarChar(190)
   password_         String             @db.VarChar(190)
   type_             Int                @default(0) @db.TinyInt
-  address          address[]
+  address          client_address[]
   client_telephone client_telephone[]
   sales_order      sales_order[]
 }

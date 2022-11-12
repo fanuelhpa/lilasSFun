@@ -39,10 +39,21 @@ export class ClientService {
                     email: email,
                     password_:password,
                     type_: type,
-                }
-            
+                },
+
             });
 
             return insertedClient;
+    }
+
+    public insertClients = async (client: any) =>{
+
+        let clientsInserted = await this.prisma.client_.create({
+            
+            data: client,
+               
+        });
+
+        return clientsInserted;
     }
 }
